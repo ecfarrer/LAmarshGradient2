@@ -24,13 +24,13 @@ datPlants <- merge_phyloseq(otu_table(otuplants, taxa_are_rows=FALSE),
                             sample_data(sampleplants))
 
 
-#with phrag
+#with phrag, use this
 otuplants<-dat17[,5:51]/rowSums(dat17[,5:51])
 colnames(otuplants) <- gsub(" ",".",colnames(otuplants))
 rownames(otuplants)<-paste("s",dat17$Plot,sep="")
 ind<-which(is.na(rowSums(otuplants)))
 otuplants[ind,]<-0
-sampleplants<-dat17[,c(1:4,52:81)]
+sampleplants<-dat17[,c(1:4,52:116)]
 rownames(sampleplants)<-paste("s",sampleplants$Plot,sep="")
 
 datPlants <- merge_phyloseq(otu_table(otuplants, taxa_are_rows=FALSE), 
@@ -89,6 +89,7 @@ mynmdsP <- ordinate(tempphyP, "CAP",distance(tempphyP, method = "jaccard", binar
 #mynmds <- ordinate(tempphyP, "NMDS", "bray")
 #mynmds <- ordinate(tempphyP, "NMDS", distance(tempphyP, method = "jaccard", binary = TRUE))
 anova(mynmdsP,by="terms",permutations = how(blocks=sample_data(tempphyP)$Site,nperm=9999))
+mynmdsP <- ordinate(tempphyP, "CAP",distance(tempphyP, method = "jaccard", binary = TRUE),formula=as.formula(~MarshClassV+Transect))
 anova(mynmdsP,by="margin",permutations = how(blocks=sample_data(tempphyP)$Site,nperm=9999)) #permuting within site doesn't change the p value or f statistic
 
 #Variance explained
@@ -117,6 +118,8 @@ tempphyPI<-tempphyP%>%
   subset_samples(Site!="LUMCON 1",Site!="LUMCON 2")
 mynmdsPI <- ordinate(tempphyPI, "CAP",distance(tempphyPI, method = "jaccard", binary = TRUE),formula=as.formula(~MarshClassV*Transect))
 anova(mynmdsPI,by="terms",permutations = how(blocks=sample_data(tempphyPI)$Site,nperm=9999))
+mynmdsPI <- ordinate(tempphyPI, "CAP",distance(tempphyPI, method = "jaccard", binary = TRUE),formula=as.formula(~MarshClassV+Transect))
+anova(mynmdsPI,by="margin",permutations = how(blocks=sample_data(tempphyPI)$Site,nperm=9999))
 mynmdsPI <- ordinate(tempphyPI, "CAP",distance(tempphyPI, method = "jaccard", binary = TRUE),formula=as.formula(~MarshClassV+Condition(Transect)));mynmdsPI
 mynmdsPI <- ordinate(tempphyPI, "CAP",distance(tempphyPI, method = "jaccard", binary = TRUE),formula=as.formula(~Transect+Condition(MarshClassV)));mynmdsPI
 mynmdsPI <- ordinate(tempphyPI, "CAP",distance(tempphyPI, method = "jaccard", binary = TRUE),formula=as.formula(~MarshClassV*Transect+Condition(Transect+MarshClassV)));mynmdsPI
@@ -227,10 +230,6 @@ plot_grid(ordlistf[[1]],ordlistf[[2]],ordlistf[[3]],ordlistf[[4]],ordlistf[[5]],
 
 #Trying to do a single ordination. this doesn't work b/c you can't condition on site and then have marshclassV as an explanatory variable. can do it if you ignore site effects.However, in this analysis, the sig marshclass by transition interaction means that marsh composition is changing in 
 
-sample_data(datITSS5c)$MarshClassVTransect<-paste(sample_data(datITSS5c)$MarshClassV,sample_data(datITSS5c)$Transect,sep=" ")
-
-sample_data(datITSS5c)$"MarshClass_Transect"<-plyr::revalue(sample_data(datITSS5c)$MarshClassVTransect,c("Fresh Phragmites"="Fresh Monoculture","Brackish Phragmites" = "Brackish Monoculture","Saline Phragmites"="Saline Monoculture"))
-
 sample_data(datITSS5c)$"MarshClass_Transect"<-factor(sample_data(datITSS5c)$"MarshClass_Transect",levels=c("Fresh Native","Fresh Transition","Fresh Monoculture","Brackish Native","Brackish Transition","Brackish Monoculture","Saline Native","Saline Transition","Saline Monoculture"))
 
 sample_data(datITSS5c)$MarshClassVTransect<-factor(sample_data(datITSS5c)$MarshClassVTransect,levels=c("Fresh Native","Fresh Transition","Fresh Phragmites","Brackish Native","Brackish Transition","Brackish Phragmites","Saline Native","Saline Transition","Saline Phragmites"))
@@ -240,7 +239,8 @@ tempphyF<-datITSS5c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 mynmdsF <- ordinate(tempphyF, "CAP", "bray",formula=as.formula(~MarshClassV*Transect))
 anova(mynmdsF,by="terms",permutations = how(blocks=sample_data(tempphyF)$Site,nperm=9999))
-#anova(mynmdsF,by="margin",permutations = how(blocks=sample_data(tempphyF)$Site,nperm=9999))
+mynmdsF <- ordinate(tempphyF, "CAP", "bray",formula=as.formula(~MarshClassV+Transect))
+anova(mynmdsF,by="margin",permutations = how(blocks=sample_data(tempphyF)$Site,nperm=9999))
 
 #variance explained
 mynmdsF <- ordinate(tempphyF, "CAP", "bray",formula=as.formula(~MarshClassV+Condition(Transect)));mynmdsF
@@ -265,6 +265,8 @@ tempphyFI<-tempphyF%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 mynmdsFI <- ordinate(tempphyFI, "CAP", "bray",formula=as.formula(~MarshClassV*Transect))
 anova(mynmdsFI,by="terms",permutations = how(blocks=sample_data(tempphyFI)$Site,nperm=9999))
+mynmdsFI <- ordinate(tempphyFI, "CAP", "bray",formula=as.formula(~MarshClassV+Transect))
+anova(mynmdsFI,by="margin",permutations = how(blocks=sample_data(tempphyFI)$Site,nperm=9999))
 mynmdsFI <- ordinate(tempphyFI, "CAP","bray",formula=as.formula(~MarshClassV+Condition(Transect)));mynmdsFI
 mynmdsFI <- ordinate(tempphyFI, "CAP","bray",formula=as.formula(~Transect+Condition(MarshClassV)));mynmdsFI
 mynmdsFI <- ordinate(tempphyFI, "CAP","bray",formula=as.formula(~MarshClassV*Transect+Condition(Transect+MarshClassV)));mynmdsFI
@@ -279,7 +281,7 @@ tempphyFF<-datITSS5c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsFFresh <- ordinate(tempphyFF, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
-mynmdsFFresh <- ordinate(tempphyFF, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
+#mynmdsFFresh <- ordinate(tempphyFF, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 anova(mynmdsFFresh,permutations = how(blocks=sample_data(tempphyFF)$Site,nperm=9999))
 Fungi1<-plot_ordination(tempphyFF, mynmdsFFresh, type=c("sites"),color="Transect",axes=c(1,2))+#, color="Class"
   theme_classic()+
@@ -302,7 +304,7 @@ tempphyFB<-datITSS5c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsFBrackish <- ordinate(tempphyFB, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
-mynmdsFBrackish <- ordinate(tempphyFB, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
+#mynmdsFBrackish <- ordinate(tempphyFB, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 anova(mynmdsFBrackish,permutations = how(blocks=sample_data(tempphyFB)$Site,nperm=9999))
 Fungi2<-plot_ordination(tempphyFB, mynmdsFBrackish, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
@@ -326,7 +328,7 @@ tempphyFS<-datITSS5c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsFSaline <- ordinate(tempphyFS, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
-mynmdsFSaline <- ordinate(tempphyFS, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
+#mynmdsFSaline <- ordinate(tempphyFS, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 anova(mynmdsFSaline,permutations = how(blocks=sample_data(tempphyFS)$Site,nperm=9999))
 Fungi3<-plot_ordination(tempphyFS, mynmdsFSaline, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
@@ -377,10 +379,6 @@ for (i in 1:8){
 legend <- cowplot::get_legend(plot_ordination(tempphy, mynmds, type="samples", color="Transect"))
 plot_grid(ordlistb[[1]],ordlistb[[2]],ordlistb[[3]],ordlistb[[4]],ordlistb[[5]],ordlistb[[6]],ordlistb[[7]],ordlistb[[8]],legend, nrow = 1)
 
-sample_data(datBac4c)$MarshClassVTransect<-paste(sample_data(datBac4c)$MarshClassV,sample_data(datBac4c)$Transect,sep=" ")
-
-sample_data(datBac4c)$"MarshClass_Transect"<-plyr::revalue(sample_data(datBac4c)$MarshClassVTransect,c("Fresh Phragmites"="Fresh Monoculture","Brackish Phragmites" = "Brackish Monoculture","Saline Phragmites"="Saline Monoculture"))
-
 sample_data(datBac4c)$"MarshClass_Transect"<-factor(sample_data(datBac4c)$"MarshClass_Transect",levels=c("Fresh Native","Fresh Transition","Fresh Monoculture","Brackish Native","Brackish Transition","Brackish Monoculture","Saline Native","Saline Transition","Saline Monoculture"))
 
 sample_data(datBac4c)$MarshClassVTransect<-factor(sample_data(datBac4c)$MarshClassVTransect,levels=c("Fresh Native","Fresh Transition","Fresh Phragmites","Brackish Native","Brackish Transition","Brackish Phragmites","Saline Native","Saline Transition","Saline Phragmites"))
@@ -391,13 +389,12 @@ tempphyB<-datBac4c%>%
 #  subset_samples(Site=="Turtle Cove")%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 mynmdsB <- ordinate(tempphyB, "CAP", "bray",formula=as.formula(~MarshClassV*Transect))
-#mynmdsB <- ordinate(tempphyB, "NMDS", "bray")
 anova(mynmdsB,by="terms",permutations = how(blocks=sample_data(tempphyB)$Site,nperm=9999))
 anova(mynmdsB,by="margin",permutations = how(blocks=sample_data(tempphyB)$Site,nperm=9999))
 
 #varianced explained
 mynmdsB <- ordinate(tempphyB, "CAP", "bray",formula=as.formula(~Transect+Condition(MarshClassV)));mynmdsB
-mynmdsB <- ordinate(tempphyB, "CAP", "bray",formula=as.formula(~Transect));mynmdsB
+mynmdsB <- ordinate(tempphyB, "CAP", "bray",formula=as.formula(~MarshClassV+Condition(Transect)));mynmdsB
 mynmdsB <- ordinate(tempphyB, "CAP", "bray",formula=as.formula(~Transect*MarshClassV+Condition(Transect+MarshClassV)));mynmdsB
 
 #it looks like the effect of phragmites varies by SITE rather than marsh class, the site*transect is much more significant (explains 10% of the variation)
@@ -424,6 +421,8 @@ tempphyBI<-tempphyB%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 mynmdsBI <- ordinate(tempphyBI, "CAP", "bray",formula=as.formula(~MarshClassV*Transect))
 anova(mynmdsBI,by="terms",permutations = how(blocks=sample_data(tempphyBI)$Site,nperm=9999))
+mynmdsBI <- ordinate(tempphyBI, "CAP", "bray",formula=as.formula(~MarshClassV+Transect))
+anova(mynmdsBI,by="margin",permutations = how(blocks=sample_data(tempphyBI)$Site,nperm=9999))
 mynmdsBI <- ordinate(tempphyBI, "CAP","bray",formula=as.formula(~MarshClassV+Condition(Transect)));mynmdsBI
 mynmdsBI <- ordinate(tempphyBI, "CAP","bray",formula=as.formula(~Transect+Condition(MarshClassV)));mynmdsBI
 mynmdsBI <- ordinate(tempphyBI, "CAP","bray",formula=as.formula(~MarshClassV*Transect+Condition(Transect+MarshClassV)));mynmdsBI
@@ -753,7 +752,6 @@ dev.off()
 
 
 #FUNGI
-#old file sample_data(datITS2rcsoil)
 sample_data(datITSS5c)
 
 #A number of samples did not have reads
@@ -827,7 +825,6 @@ dev.off()
 
 
 #Bacteria
-#sample_data(datBac3rc)
 datBac4c
 
 #A number of samples did not have reads
@@ -1148,7 +1145,7 @@ dat17$Plant.Pathogen.nooutliers[which(dat17$Plant.Pathogen.nooutliers>10)]<-NA
 boxplot(dat17$Plant.Pathogen.nooutliers)
 
 #m1<-lme(sqrt(Plant.Pathogen.nooutliers)~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),data=dat17,na.action=na.omit)
-m1<-lme(sqrt(Plant.Pathogen.nooutliers)~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit,control = lmeControl(msMaxIter = 10000,tolerance=1e-06,warnOnly= T))#
+m1<-lme(log(Plant.Pathogen.nooutliers+1)~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit,control = lmeControl(msMaxIter = 10000,tolerance=1e-06,warnOnly= T))#
 anova(m1,m2) #het var sig
 anova(m1,type="marginal")
 summary(glht(m1,linfct=mcp(Transect="Tukey")))
@@ -1157,10 +1154,10 @@ hist(resid(m1,type="normalized"))
 plot(fitted(m1),resid(m1,type="normalized"))
 
 #make figure with non-transformed data??
-m1a<-lme(Plant.Pathogen.nooutliers~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit)#,control = lmeControl(msMaxIter = 10000,tolerance=1e-06
-m1F<-as.data.frame(summary(emmeans(m1a,~Transect|MarshClassV)))
+#m1a<-lme(Plant.Pathogen.nooutliers~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit)#,control = lmeControl(msMaxIter = 10000,tolerance=1e-06
+#m1Fa<-as.data.frame(summary(emmeans(m1a,~Transect|MarshClassV)))
 
-m2<-lme(sqrt(Plant.Pathogen.nooutliers)~MarshClassV.Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit)
+m2<-lme(log(Plant.Pathogen.nooutliers+1)~MarshClassV.Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit)
 #summary(glht(m1, linfct = mcp(Transect = "Tukey")))
 summary(glht(m2, linfct = mcp(MarshClassV.Transect=c("Fresh.Native-Fresh.Transition=0","Fresh.Native-Fresh.Phragmites=0","Fresh.Transition-Fresh.Phragmites=0","Brackish.Native-Brackish.Transition=0","Brackish.Native-Brackish.Phragmites=0","Brackish.Transition-Brackish.Phragmites=0","Saline.Native-Saline.Transition=0","Saline.Native-Saline.Phragmites=0","Saline.Transition-Saline.Phragmites=0"))))
 
@@ -1194,7 +1191,7 @@ anova(m2,type="marginal")
 summary(glht(m2,linfct=mcp(Transect="Tukey")))
 m1F<-as.data.frame(summary(emmeans(m2,~Transect)))
 
-#Final fig for manuscript
+#fig
 pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Manuscripts/Gradientms/Figs/fungirich.pdf",width=2.2,height=2.2)
 ggplot(m1F,aes(x=Transect,y=emmean,color=Transect,group=MarshClassV))+
   labs(x = "",y="Plant pathogen percent abundance") +
@@ -1207,21 +1204,45 @@ ggplot(m1F,aes(x=Transect,y=emmean,color=Transect,group=MarshClassV))+
   facet_wrap(vars(MarshClassV),strip.position = "bottom")
 dev.off()
 
+#Make figure by back-transforming
+m1F<-as.data.frame(summary(emmeans(m1,~Transect|MarshClassV)))
+m1Ftrans<-m1F[,1:2]
+m1Ftrans$emmean<-exp(m1F$emmean)-1
+m1Ftrans$lower<-exp(m1F$emmean-m1F$SE)-1
+m1Ftrans$upper<-exp(m1F$emmean+m1F$SE)-1
+#log(data+1)=newdata
+#data=exp(newdata)-1
+
+#Final fig for manuscript
+pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Manuscripts/Gradientms/Figs/pathogenabundance.pdf",width=2.2,height=2.2)
+ggplot(m1Ftrans,aes(x=Transect,y=emmean,color=Transect,group=MarshClassV))+
+  labs(x = "",y="Plant pathogen percent abundance") +
+  theme_classic()+
+  theme(line=element_line(size=.3),text=element_text(size=10),strip.background = element_rect(colour="white", fill="white"),axis.line=element_line(color="gray30",size=.5),legend.position = "none",panel.spacing=unit(0,"cm"),strip.placement = "outside")+
+  geom_line(stat = "identity", position = "identity",size=.5,col="black")+
+  geom_point(size=1.8)+
+  geom_errorbar(aes(ymax = upper, ymin=lower),width=.25,size=.5) +
+  scale_color_manual(values = c("gray70","gray50", "gray30"))+
+  facet_wrap(vars(MarshClassV),strip.position = "bottom")
+dev.off()
+
+
 
 ##### Arbuscular.Mycorrhizal #####
 
 #the models with fixed effects MarshClassV*Transect vs MarshClassV.Transect are only identical if fit with ML
 
 hist(dat17$Arbuscular.Mycorrhizal)
+plot(log(dat17$Arbuscular.Mycorrhizal+1)~dat17$MarshClassV.Transect)
 
-#m1<-lme(Arbuscular.Mycorrhizal~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),data=dat17,na.action=na.omit)
-m1<-lme(log(Arbuscular.Mycorrhizal+1)~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit)#,control = lmeControl(msMaxIter = 10000,tolerance=1e-06,warnOnly= T)
-hist(resid(m1))
+#m1<-lme(log(Arbuscular.Mycorrhizal+1)~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),data=dat17,na.action=na.omit)
+m1<-lme(log(Arbuscular.Mycorrhizal+1)~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit,control = lmeControl(msMaxIter = 10000,tolerance=1e-06,warnOnly= T))#
+hist(resid(m1,type="normalized"))
 plot(fitted(m1),resid(m1,type="normalized"))
 plot(dat17$Transect[is.na(dat17$Arbuscular.Mycorrhizal)==F],resid(m1,type="normalized"))
 anova(m1,m2) #het var sig
 anova(m1,type="marginal")
-summary(glht(m1,linfct=mcp(MarshClassV="Tukey")))
+summary(glht(m1,linfct=mcp(Transect="Tukey")))
 
 m1F<-as.data.frame(summary(emmeans(m1,~Transect|MarshClassV)))
 
@@ -1229,7 +1250,7 @@ m2<-lme(Arbuscular.Mycorrhizal~MarshClassV.Transect,random=~1|Site,correlation=c
 #summary(glht(m1, linfct = mcp(Transect = "Tukey")))
 summary(glht(m2, linfct = mcp(MarshClassV.Transect=c("Fresh.Native-Fresh.Transition=0","Fresh.Native-Fresh.Phragmites=0","Fresh.Transition-Fresh.Phragmites=0","Brackish.Native-Brackish.Transition=0","Brackish.Native-Brackish.Phragmites=0","Brackish.Transition-Brackish.Phragmites=0","Saline.Native-Saline.Transition=0","Saline.Native-Saline.Phragmites=0","Saline.Transition-Saline.Phragmites=0"))))
 
-summary(glht(m2, linfct = mcp(MarshClassV.Transect=c("Fresh.Transition-Fresh.Phragmites=0","Brackish.Native-Brackish.Transition=0","Brackish.Native-Brackish.Phragmites=0","Brackish.Transition-Brackish.Phragmites=0","Saline.Native-Saline.Transition=0","Saline.Native-Saline.Phragmites=0","Saline.Transition-Saline.Phragmites=0"))))
+#summary(glht(m2, linfct = mcp(MarshClassV.Transect=c("Fresh.Transition-Fresh.Phragmites=0","Brackish.Native-Brackish.Transition=0","Brackish.Native-Brackish.Phragmites=0","Brackish.Transition-Brackish.Phragmites=0","Saline.Native-Saline.Transition=0","Saline.Native-Saline.Phragmites=0","Saline.Transition-Saline.Phragmites=0"))))
 
 #Only on haplotype I
 m1<-lme(Chao1ITS~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17I,na.action=na.omit)
@@ -1250,14 +1271,40 @@ ggplot(m1F,aes(x=Transect,y=emmean,color=Transect,group=MarshClassV))+
   facet_wrap(vars(MarshClassV),strip.position = "bottom")
 dev.off()
 
+#Make figure by back-transforming
+m1F<-as.data.frame(summary(emmeans(m1,~Transect|MarshClassV)))
+m1Ftrans<-m1F[,1:2]
+m1Ftrans$emmean<-exp(m1F$emmean)-1
+m1Ftrans$lower<-exp(m1F$emmean-m1F$SE)-1
+m1Ftrans$upper<-exp(m1F$emmean+m1F$SE)-1
+#log(data+1)=newdata
+#data=exp(newdata)-1
+
+#Final fig for manuscript
+pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Manuscripts/Gradientms/Figs/AMFabundance.pdf",width=2.2,height=2.2)
+ggplot(m1Ftrans,aes(x=Transect,y=emmean,color=Transect,group=MarshClassV))+
+  labs(x = "",y="AMF percent abundance") +
+  theme_classic()+
+  theme(line=element_line(size=.3),text=element_text(size=10),strip.background = element_rect(colour="white", fill="white"),axis.line=element_line(color="gray30",size=.5),legend.position = "none",panel.spacing=unit(0,"cm"),strip.placement = "outside")+
+  geom_line(stat = "identity", position = "identity",size=.5,col="black")+
+  geom_point(size=1.8)+
+  geom_errorbar(aes(ymax = upper, ymin=lower),width=.25,size=.5) +
+  scale_color_manual(values = c("gray70","gray50", "gray30"))+
+  facet_wrap(vars(MarshClassV),strip.position = "bottom")
+dev.off()
 
 
-##### Ectomycorrhizal #####
+
+##### Ectomycorrhizal - too low abundance to be that useful, not zeros but just very low abundance #####
 plot(dat17$Ectomycorrhizal~dat17$MarshClassV.Transect)
 boxplot(dat17$Ectomycorrhizal)
 
+dat17$Ectomycorrhizal.nooutliers<-dat17$Ectomycorrhizal
+dat17$Ectomycorrhizal.nooutliers[which(dat17$Ectomycorrhizal.nooutliers>1.5)]<-NA
+boxplot(dat17$Arbuscular.Mycorrhizal)
+
 #m1<-lme(Ectomycorrhizal~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),data=dat17,na.action=na.omit)
-m1<-lme(Ectomycorrhizal~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit,control = lmeControl(msMaxIter = 10000,tolerance=1e-06,warnOnly= T))#
+m1<-lme(Ectomycorrhizal.nooutliers~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17,na.action=na.omit,control = lmeControl(msMaxIter = 10000,tolerance=1e-06,warnOnly= T))#
 anova(m1,m2) #het var sig
 anova(m1,type="marginal")
 summary(glht(m1,linfct=mcp(Transect="Tukey")))
@@ -1268,7 +1315,7 @@ m2<-lme(Ectomycorrhizal~MarshClassV.Transect,random=~1|Site,correlation=corSpher
 #summary(glht(m1, linfct = mcp(Transect = "Tukey")))
 summary(glht(m2, linfct = mcp(MarshClassV.Transect=c("Fresh.Native-Fresh.Transition=0","Fresh.Native-Fresh.Phragmites=0","Fresh.Transition-Fresh.Phragmites=0","Brackish.Native-Brackish.Transition=0","Brackish.Native-Brackish.Phragmites=0","Brackish.Transition-Brackish.Phragmites=0","Saline.Native-Saline.Transition=0","Saline.Native-Saline.Phragmites=0","Saline.Transition-Saline.Phragmites=0"))))
 
-summary(glht(m2, linfct = mcp(MarshClassV.Transect=c("Fresh.Transition-Fresh.Phragmites=0","Brackish.Native-Brackish.Transition=0","Brackish.Native-Brackish.Phragmites=0","Brackish.Transition-Brackish.Phragmites=0","Saline.Native-Saline.Transition=0","Saline.Native-Saline.Phragmites=0","Saline.Transition-Saline.Phragmites=0"))))
+#summary(glht(m2, linfct = mcp(MarshClassV.Transect=c("Fresh.Transition-Fresh.Phragmites=0","Brackish.Native-Brackish.Transition=0","Brackish.Native-Brackish.Phragmites=0","Brackish.Transition-Brackish.Phragmites=0","Saline.Native-Saline.Transition=0","Saline.Native-Saline.Phragmites=0","Saline.Transition-Saline.Phragmites=0"))))
 
 #Only on haplotype I
 m1<-lme(Chao1ITS~MarshClassV*Transect,random=~1|Site,correlation=corSpher(form = ~ Lat+Long),weights=varIdent(form=~1|MarshClassV.Transect),data=dat17I,na.action=na.omit)

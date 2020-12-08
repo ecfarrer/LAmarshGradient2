@@ -17,12 +17,11 @@ library(emmeans)#for least squares means, new
 #library(lsmeans) #for least squares means, old
 #library(ggforce)#for some ellipses on ordintions
 
-save.image("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Stats/Gradient/workspacecleandata.Rdata")  # 
-load("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Stats/Gradient/workspacebioinformatics.Rdata")  # 
+options(contrasts=c("contr.helmert","contr.poly"));options("contrasts")
 
+save.image("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Stats/Gradient/workspace5.Rdata")  # 
+load("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Stats/Gradient/workspace5.Rdata")  # 
 
-#my redo of the fungi bioinformatics, in qiime2 folder
-Roots_SoilFungi2017EF2.RData
 
 #Bioinformatics on fungi and bacteria
 workspacebioinformatics.Rdata
@@ -43,13 +42,8 @@ datBac4cotu
 dat17 #has microbial richness added to it
 
 
-#Analysis workspaces old fungi/bac data
-workspace1.Rdata
-workspace2.Rdata
-
-#Analysis new data
-workspace3.Rdata
-workspace4.Rdata
+#Analysis workspaces 
+workspace5.Rdata
 
 
 

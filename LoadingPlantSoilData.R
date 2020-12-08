@@ -193,7 +193,7 @@ dat17<-dat17b
 
 
 
-#Haven't redone this
+#only haplotype I (run after doing fungal/bacterial bioinformatics)
 dat17I<-dat17%>%
   filter(Site!="LUMCON 1",Site!="LUMCON 2")
 dat17aI<-dat17a%>%

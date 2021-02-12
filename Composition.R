@@ -142,8 +142,8 @@ datPlantsF<-datPlants%>%
   filter_taxa(function(x) sum(x>0) >0, prune=T)
 
 mynmdsFresh <- ordinate(datPlantsF, "CAP",distance(datPlantsF, method = "jaccard", binary = TRUE),formula=as.formula(~Transect+Condition(Site)))#
+anova(mynmdsFresh,permutations = how(blocks=sample_data(datPlantsF)$Site,nperm=9999),by="margin")
 mynmdsFresh <- ordinate(datPlantsF, "CAP",distance(datPlantsF, method = "jaccard", binary = TRUE),formula=as.formula(~1+Condition(Site)))#
-anova(mynmdsFresh,permutations = how(blocks=sample_data(datPlantsF)$Site,nperm=9999))
 Plant1<-plot_ordination(datPlantsF, mynmdsFresh, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
   theme(legend.position = "none")+
@@ -164,8 +164,8 @@ datPlantsB<-datPlants%>%
   filter_taxa(function(x) sum(x>0) >0, prune=T)
 
 mynmdsBrackish <- ordinate(datPlantsB, "CAP",distance(datPlantsB, method = "jaccard", binary = TRUE),formula=as.formula(~Transect+Condition(Site)))
+anova(mynmdsBrackish,permutations = how(blocks=sample_data(datPlantsB)$Site,nperm=9999),by="margin")
 mynmdsBrackish <- ordinate(datPlantsB, "CAP",distance(datPlantsB, method = "jaccard", binary = TRUE),formula=as.formula(~1+Condition(Site)))
-anova(mynmdsBrackish,permutations = how(blocks=sample_data(datPlantsB)$Site,nperm=9999))
 Plant2<-plot_ordination(datPlantsB, mynmdsBrackish, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
   theme(legend.position = "none")+
@@ -186,8 +186,8 @@ datPlantsS<-datPlants%>%
   filter_taxa(function(x) sum(x>0) >0, prune=T)
 
 mynmdsSaline <- ordinate(datPlantsS, "CAP",distance(datPlantsS, method = "jaccard", binary = TRUE),formula=as.formula(~Transect+Condition(Site)))
+anova(mynmdsSaline,permutations = how(blocks=sample_data(datPlantsS)$Site,nperm=9999),by="margin")
 mynmdsSaline <- ordinate(datPlantsS, "CAP",distance(datPlantsS, method = "jaccard", binary = TRUE),formula=as.formula(~1+Condition(Site)))
-anova(mynmdsSaline,permutations = how(blocks=sample_data(datPlantsS)$Site,nperm=9999))
 Plant3<-plot_ordination(datPlantsS, mynmdsSaline, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
   theme(legend.position = "none")+
@@ -281,8 +281,8 @@ tempphyFF<-datITSS5c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsFFresh <- ordinate(tempphyFF, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
-#mynmdsFFresh <- ordinate(tempphyFF, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 anova(mynmdsFFresh,permutations = how(blocks=sample_data(tempphyFF)$Site,nperm=9999))
+mynmdsFFresh <- ordinate(tempphyFF, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 Fungi1<-plot_ordination(tempphyFF, mynmdsFFresh, type=c("sites"),color="Transect",axes=c(1,2))+#, color="Class"
   theme_classic()+
   geom_point(size = 2)+
@@ -304,8 +304,8 @@ tempphyFB<-datITSS5c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsFBrackish <- ordinate(tempphyFB, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
-#mynmdsFBrackish <- ordinate(tempphyFB, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 anova(mynmdsFBrackish,permutations = how(blocks=sample_data(tempphyFB)$Site,nperm=9999))
+mynmdsFBrackish <- ordinate(tempphyFB, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 Fungi2<-plot_ordination(tempphyFB, mynmdsFBrackish, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
   geom_point(size = 2)+
@@ -328,8 +328,8 @@ tempphyFS<-datITSS5c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsFSaline <- ordinate(tempphyFS, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
-#mynmdsFSaline <- ordinate(tempphyFS, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 anova(mynmdsFSaline,permutations = how(blocks=sample_data(tempphyFS)$Site,nperm=9999))
+mynmdsFSaline <- ordinate(tempphyFS, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 Fungi3<-plot_ordination(tempphyFS, mynmdsFSaline, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
   geom_point(size = 2)+
@@ -389,7 +389,8 @@ tempphyB<-datBac4c%>%
 #  subset_samples(Site=="Turtle Cove")%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 mynmdsB <- ordinate(tempphyB, "CAP", "bray",formula=as.formula(~MarshClassV*Transect))
-anova(mynmdsB,by="terms",permutations = how(blocks=sample_data(tempphyB)$Site,nperm=9999))
+anova(mynmdsB,by="margin",permutations = how(blocks=sample_data(tempphyB)$Site,nperm=9999))
+mynmdsB <- ordinate(tempphyB, "CAP", "bray",formula=as.formula(~MarshClassV+Transect))
 anova(mynmdsB,by="margin",permutations = how(blocks=sample_data(tempphyB)$Site,nperm=9999))
 
 #varianced explained
@@ -437,8 +438,8 @@ tempphyBF<-datBac4c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsBFresh <- ordinate(tempphyBF, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
+anova(mynmdsBFresh,permutations = how(blocks=sample_data(tempphyBF)$Site,nperm=9999),by="margin")
 mynmdsBFresh <- ordinate(tempphyBF, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
-anova(mynmdsBFresh,permutations = how(blocks=sample_data(tempphyBF)$Site,nperm=9999))
 Bac1<-plot_ordination(tempphyBF, mynmdsBFresh, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
   geom_point(size = 2)+
@@ -460,8 +461,8 @@ tempphyBB<-datBac4c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsBBrackish <- ordinate(tempphyBB, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
-mynmdsBBrackish <- ordinate(tempphyBB, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 anova(mynmdsBBrackish,permutations = how(blocks=sample_data(tempphyBB)$Site,nperm=9999))
+mynmdsBBrackish <- ordinate(tempphyBB, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 Bac2<-plot_ordination(tempphyBB, mynmdsBBrackish, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
   geom_point(size = 2)+
@@ -483,8 +484,8 @@ tempphyBS<-datBac4c%>%
   filter_taxa(function(x) sum(x>0) >2, prune=T)
 
 mynmdsBSaline <- ordinate(tempphyBS, "CAP","bray",formula=as.formula(~Transect+Condition(Site)))#
-mynmdsBSaline <- ordinate(tempphyBS, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
-anova(mynmdsBSaline,permutations = how(blocks=sample_data(tempphyBS)$Site,nperm=9999))
+anova(mynmdsBSaline,permutations = how(blocks=sample_data(tempphyBS)$Site,nperm=9999),by="margin")
+#mynmdsBSaline <- ordinate(tempphyBS, "CAP","bray",formula=as.formula(~1+Condition(Site)))#
 Bac3<-plot_ordination(tempphyBS, mynmdsBSaline, type=c("sites"), color="Transect",axes=c(1,2))+
   theme_classic()+
   geom_point(size = 2)+

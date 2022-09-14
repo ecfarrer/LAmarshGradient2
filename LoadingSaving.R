@@ -59,7 +59,7 @@ datITS2rcsoil
 richITS2
 
 
-#Files to export for Thomas, Sept 2022
+#Files to export for Thomas, Sept 2022. not actually needed b/c I sent him Carolyn's root and soil files
 write.csv(datITSS5cotu,"/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Stats/Gradient/QIIME2/Fungi/analysisSept2020/ExportforThomasSept2022/datITSS5cotu.csv",row.names = F)
 write.csv(tax_table(datITSS5c),"/Users/farrer/Dropbox/EmilyComputerBackup/Documents/LAmarsh/Survey/Stats/Gradient/QIIME2/Fungi/analysisSept2020/ExportforThomasSept2022/taxtable.csv",row.names = T)
 

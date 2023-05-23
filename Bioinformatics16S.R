@@ -113,16 +113,16 @@ qiime dada2 denoise-paired \
 --p-trunc-len-r 200
 
 
-#didn't run
+#didn't run, ran 5/23/23 to see the distribution of lengths
 qiime tools export \
---input-path rep-seqsN.qza \
---output-path exported-rep-seqsN
+--input-path rep-seqs.qza \
+--output-path exported-rep-seqs
 
 #to print the line with the longest number of characters:
 cat dna-sequences.fasta|awk '{print length, $0}'|sort -nr|head -1
-#the longest line in the rep set is 460bp, and blasts to a fungus, odd
+#the longest line in the rep set is 420bp, and blasts to Myxococcales bacterium
 
-#26277 are 253 bp
+#66253 are 253 bp, 148 are 252, 1116 are 252, 10990 are 254, 949 are 255 212 are 256. there is also a tiny clump of sequences around 270-274 (100-200 sequences in each length category)
 awk '{print length}' dna-sequences.fasta | sort | uniq -c
 
 
